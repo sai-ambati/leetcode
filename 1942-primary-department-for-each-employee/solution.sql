@@ -1,11 +1,10 @@
 # Write your MySQL query statement below
-with cte as(
-select *,
-count(*) over(partition by employee_id) as emp_count
-from Employee
-)
 
-select employee_id, department_id
-from cte
-where emp_count = 1 or primary_flag = 'Y'
--- having count(*) over(partition by employee_id)=1
+select *
+from (
+    select distinct employee_id,
+    if(primary_flag = 'Y', department_id,
+    if((count(*) over(partition by employee_id)) =1, department_id, null)) as department_id
+    from Employee
+) tbl
+where department_id is not null;
