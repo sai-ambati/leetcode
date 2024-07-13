@@ -1,11 +1,6 @@
 # Write your MySQL query statement below
 
 select employee_id,
-case
-when employee_id % 2 != 0 and substring(name,1,1) != 'M'
-then salary
-else 0
-end as bonus
-
+if(employee_id %2 = 1 and lower(name) not like 'm%', salary, 0) as bonus
 from Employees
-order by employee_id
+order by employee_id;
