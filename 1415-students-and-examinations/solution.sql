@@ -1,13 +1,18 @@
 # Write your MySQL query statement below
 
-select stu.student_id, stu.student_name, sub.subject_name,
--- sum(case when e.subject_name is not null then 1 else 0 end) as attended_exams
--- sum(case when e.student_id is null and e.subject_name is null then 0 else 1 end) as attended_exams
-count(e.student_id ) as attended_exams
-from Students stu
-cross join Subjects sub
+with cte as(
+    select *
+    from Students,Subjects
+    order by student_id, subject_name
+),
+cte2 as(
+    select *, count(subject_name) as attended_exams
+    from Examinations
+    group by student_id, subject_name
+)
 
-left join Examinations e 
-on stu.student_id = e.student_id and sub.subject_name = e.subject_name
-group by stu.student_id, stu.student_name, sub.subject_name
-order by stu.student_id, sub.subject_name
+select c1.student_id, c1.student_name, c1.subject_name, ifnull(c2.attended_exams, 0) as attended_exams
+from cte c1
+left join cte2 c2
+on c1.student_id = c2.student_id and c1.subject_name = c2.subject_name
+order by c1.student_id, c1.subject_name
