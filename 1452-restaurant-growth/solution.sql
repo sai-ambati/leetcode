@@ -1,16 +1,16 @@
 # Write your MySQL query statement below
 with cte as(
-    select distinct visited_on, sum(amount) over(partition by visited_on) as amount,
-    dense_rank() over(order by visited_on) as den_rank
+    select visited_on, sum(amount) as amount
     from Customer
-),
-cte2 as(
-    select visited_on, den_rank,
-    sum(amount) over(order by visited_on rows between 6 preceding and current row) as amount,
-    avg(amount) over(order by visited_on rows between 6 preceding and current row) as average_amount
-    from cte
+    group by visited_on
 )
-
-select visited_on, amount, round(average_amount, 2) as average_amount
-from cte2
-where den_rank>6
+select visited_on, amount,
+round(average_amount, 2) as average_amount
+from (
+    select visited_on, sum(amount) over(order by visited_on rows between 6 preceding and current row) as amount,
+    avg(amount) over(order by visited_on rows between 6 preceding and current row) as average_amount,
+    rank() over(order by visited_on) as rank_
+    from cte
+) tbl
+where rank_>6
+order by visited_on
