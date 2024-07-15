@@ -1,18 +1,19 @@
 # Write your MySQL query statement below
 
-with cte1 as(
-        select distinct product_id
-    from Products
-
-),
-
-cte2 as(
-    select *, dense_rank() over(partition by product_id order by change_date desc) as den_rank
+with cte as(
+    select *, if(change_date <= '2019-08-16' , new_price, 10) as price, 
+    max(change_date) over(partition by product_id) as recent_date
     from Products
     where change_date <= '2019-08-16'
+),
+cte2 as(
+    select distinct product_id, 10 as price
+    from Products
 )
 
-select cte1.product_id, ifnull(new_price, 10) as price
-from cte1
-left join cte2
-on cte1.product_id = cte2.product_id and cte2.den_rank = 1
+select c2.product_id, if(c1.product_id is null, c2.price,c1.price) as price
+from cte c1
+right join cte2 c2
+on c1.product_id = c2.product_id
+where change_date = recent_date or c1.product_id is null
+
