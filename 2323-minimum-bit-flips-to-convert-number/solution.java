@@ -1,13 +1,16 @@
 class Solution {
+
     public int minBitFlips(int start, int goal) {
-        int temp = start ^ goal;
-
-        int ans=0;
-        for(int i = 0; i<32; i++){
-            ans += (temp&(1<<i))>0?1:0;
+        int count = 0;
+        while (start > 0 || goal > 0) {
+            // Increment count if the current bits differ
+            if ((start & 1) != (goal & 1)) {
+                count++;
+            }
+            // Shift both numbers to the right to check the next bits
+            start >>= 1;
+            goal >>= 1;
         }
-
-        return ans;
-        
+        return count;
     }
 }
