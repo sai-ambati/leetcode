@@ -1,27 +1,38 @@
 class Solution {
+
     public int countConsistentStrings(String allowed, String[] words) {
-        HashSet<Character> hs = new HashSet<>();
+        int consistentCount = 0;
 
-        for(int i = 0; i<allowed.length(); i++){
-            hs.add(allowed.charAt(i));
-        }
+        // Iterate through each word in the words array
+        for (String word : words) {
+            boolean isWordConsistent = true;
 
-        int count  = 0;
+            // Check each character in the current word
+            for (int i = 0; i < word.length(); i++) {
+                char currentChar = word.charAt(i);
+                boolean isCharAllowed = false;
 
+                // Check if the current character is in the allowed string
+                for (int j = 0; j < allowed.length(); j++) {
+                    if (allowed.charAt(j) == currentChar) {
+                        isCharAllowed = true;
+                        break; // Character found, no need to continue searching
+                    }
+                }
 
-        for(int i = 0; i<words.length; i++){
-            int j = 0;
-            for(; j<words[i].length(); j++){
-                if(!hs.contains(words[i].charAt(j))){
-                    break;
+                // If the character is not allowed, mark the word as inconsistent
+                if (!isCharAllowed) {
+                    isWordConsistent = false;
+                    break; // No need to check remaining characters
                 }
             }
 
-            if(j==words[i].length()){
-                count++;
+            // If the word is consistent, increment the count
+            if (isWordConsistent) {
+                consistentCount++;
             }
         }
 
-        return count;
+        return consistentCount;
     }
 }
