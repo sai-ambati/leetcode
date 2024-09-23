@@ -1,41 +1,29 @@
-class TrieNode {
-    Map<Character, TrieNode> children = new HashMap();
-    boolean isWord = false;
-}
-
 class Solution {
+    Integer[] memo;
+    HashSet<String> dictionarySet;
     public int minExtraChar(String s, String[] dictionary) {
         int n = s.length();
-        var root = buildTrie(dictionary);
-        var dp = new int[n + 1];
-
-        for (int start = n - 1; start >= 0; start--) {
-            dp[start] = dp[start + 1] + 1;
-            var node = root;
-            for (int end = start; end < n; end++) {
-                if (!node.children.containsKey(s.charAt(end))) {
-                    break;
-                }
-                node = node.children.get(s.charAt(end));
-                if (node.isWord) {
-                    dp[start] = Math.min(dp[start], dp[end + 1]);
-                }
-            }
-        }
-
-        return dp[0];
+        memo = new Integer[n];
+        dictionarySet = new HashSet<>(Arrays.asList(dictionary));
+        return dp(0, n, s);
     }
-
-    private TrieNode buildTrie(String[] dictionary) {
-        var root = new TrieNode();
-        for (var word : dictionary) {
-            var node = root;
-            for (var c : word.toCharArray()) {
-                node.children.putIfAbsent(c, new TrieNode());
-                node = node.children.get(c);
-            }
-            node.isWord = true;
+    private int dp(int start, int n, String s) {
+        if (start == n) {
+            return 0;
         }
-        return root;
+        if (memo[start] != null) {
+            return memo[start];
+        }
+        // To count this character as a left over character 
+        // move to index 'start + 1'
+        int ans = dp(start + 1, n, s) + 1;
+        for (int end = start; end < n; end++) {
+            var curr = s.substring(start, end + 1);
+            if (dictionarySet.contains(curr)) {
+                ans = Math.min(ans, dp(end + 1, n, s));
+            }
+        }
+
+        return memo[start] = ans;
     }
 }
