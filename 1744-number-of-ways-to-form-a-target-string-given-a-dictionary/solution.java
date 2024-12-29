@@ -1,36 +1,45 @@
 class Solution {
-    int alphabet = 26;
-    int mod = 1000000007;
-    int cnt[][];
-    long dp[][];
 
-    long f(String target, int i, int j) {
-        if (j == 0) {
-            return i == 0 ? 1 : 0;
-        }
-        if (dp[i][j] != -1) {
-            return dp[i][j];
-        }
-        dp[i][j] = f(target, i, j - 1);
-        if (i > 0) {
-            dp[i][j] += cnt[target.charAt(i - 1) - 'a'][j - 1] * f(target, i - 1, j - 1);
-        }
-        dp[i][j] %= mod;
-        return dp[i][j];
-    }
-    
     public int numWays(String[] words, String target) {
-        int m = target.length(), k = words[0].length();
-        cnt = new int[alphabet][k];
-        for (int j = 0; j < k; j++) {
-            for (String word : words) {
-                cnt[word.charAt(j) - 'a'][j]++;
+        int wordLength = words[0].length();
+        int targetLength = target.length();
+
+        final int MOD = 1_000_000_007;
+
+        //Step 1: Calculate frequency of each character at every index in "words".
+        int[][] charFrequency = new int[wordLength][26];
+        for (String word : words) {
+            for (int j = 0; j < wordLength; j++) {
+                charFrequency[j][word.charAt(j) - 'a']++;
             }
         }
-        dp = new long[m + 1][k + 1];
-        for (int i = 0; i <= m; i++) {
-            Arrays.fill(dp[i], -1);
+
+        //Step 2: Initialize two DP arrays: prev and curr.
+        long[] prevCount = new long[targetLength + 1];
+        long[] currCount = new long[targetLength + 1];
+
+        //Base case: There is one way to form an empty target string.
+        prevCount[0] = 1;
+
+        //Step 3: Fill the DP arrays.
+        for (int currWord = 1; currWord <= wordLength; currWord++) {
+            // Copy the previous row into the current row for DP.
+            System.arraycopy(prevCount, 0, currCount, 0, currCount.length);
+            for (int currTarget = 1; currTarget <= targetLength; currTarget++) {
+                // If characters match, add the number of ways.
+                int curPos = target.charAt(currTarget - 1) - 'a';
+                currCount[currTarget] +=
+                    (1L *
+                        charFrequency[currWord - 1][curPos] *
+                        prevCount[currTarget - 1]) %
+                    MOD;
+                currCount[currTarget] %= MOD;
+            }
+            // Move current row to previous row for the next iteration.
+            System.arraycopy(currCount, 0, prevCount, 0, prevCount.length);
         }
-        return (int)f(target, m, k);
+
+        //Step 4: The result is in prev[targetLength].
+        return (int) prevCount[targetLength];
     }
 }
