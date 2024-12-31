@@ -1,31 +1,25 @@
 class Solution {
-    int[] days, costs;
-    Integer[] memo;
-    int[] durations = new int[]{1, 7, 30};
-
     public int mincostTickets(int[] days, int[] costs) {
-        this.days = days;
-        this.costs = costs;
-        memo = new Integer[days.length];
+        // The last day on which we need to travel.
+        int lastDay = days[days.length - 1];
+        int dp[] = new int[lastDay + 1];
+        Arrays.fill(dp, 0);
 
-        return dp(0);
-    }
-
-    public int dp(int i) {
-        if (i >= days.length)
-            return 0;
-        if (memo[i] != null)
-            return memo[i];
-
-        int ans = Integer.MAX_VALUE;
-        int j = i;
-        for (int k = 0; k < 3; ++k) {
-            while (j < days.length && days[j] < days[i] + durations[k])
-                j++;
-            ans = Math.min(ans, dp(j) + costs[k]);
+        int i = 0;
+        for (int day = 1; day <= lastDay; day++) {
+            // If we don't need to travel on this day, the cost won't change.
+            if (day < days[i]) {
+                dp[day] = dp[day - 1];
+            } else {
+                // Buy a pass on this day, and move on to the next travel day.
+                i++;
+                // Store the cost with the minimum of the three options.
+                dp[day] = Math.min(dp[day - 1] + costs[0],
+                        Math.min(dp[Math.max(0, day - 7)] + costs[1],
+                                dp[Math.max(0, day - 30)] + costs[2]));
+            }
         }
 
-        memo[i] = ans;
-        return ans;
+        return dp[lastDay];
     }
 }
