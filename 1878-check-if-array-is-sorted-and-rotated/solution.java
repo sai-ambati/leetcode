@@ -1,30 +1,23 @@
 class Solution {
+
     public boolean check(int[] nums) {
-        
-        int pos = 0;
+        int n = nums.length;
+        if (n <= 1) return true;
 
-        for(int i = 0; i<nums.length-1; i++){
-            if(nums[i] <= nums[i+1]){
-                pos++;
-            }
-            else{
-                break;
-            }
-        }
-        if(pos == nums.length-1){
-            return true;
-        }
-        // System.out.println(pos);
-        for(int i = pos+1; i<nums.length-1; i++){
-            if(nums[i]> nums[i+1]){
-                return false;
+        int inversionCount = 0;
+
+        // For every pair, count the number of inversions.
+        for (int i = 1; i < n; ++i) {
+            if (nums[i] < nums[i - 1]) {
+                ++inversionCount;
             }
         }
 
-        if(nums[nums.length-1] > nums[0]){
-            return false;
+        // Also check between the last and the first element due to rotation
+        if (nums[0] < nums[n - 1]) {
+            ++inversionCount;
         }
 
-        return true;
+        return inversionCount <= 1;
     }
 }
