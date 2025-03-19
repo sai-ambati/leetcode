@@ -1,24 +1,23 @@
 class Solution {
+
     public int minOperations(int[] nums) {
-        int ans = 0;
-        int len = nums.length;
-        
-        for(int i = 0; i<len-2; i++){
-            if(nums[i] == 0){
-                nums[i] = 1^nums[i];
-                nums[i+1] = 1^nums[i+1];
-                nums[i+2] = 1^nums[i+2];
-                ans++;
+        Deque<Integer> flipQueue = new ArrayDeque<>();
+        int count = 0;
+
+        for (int i = 0; i < nums.length; i++) {
+            while (!flipQueue.isEmpty() && i > flipQueue.peekFirst() + 2) {
+                flipQueue.pollFirst();
+            }
+
+            if ((nums[i] + flipQueue.size()) % 2 == 0) {
+                if (i + 2 >= nums.length) {
+                    return -1;
+                }
+                count++;
+                flipQueue.offerLast(i);
             }
         }
-        
-        for(int i = len-2; i<len; i++){
-            if(nums[i] == 0){
-                return -1;
-            }
-        }
-        
-        return ans;
-        
+
+        return count;
     }
 }
