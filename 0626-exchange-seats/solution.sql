@@ -1,11 +1,15 @@
 # Write your MySQL query statement below
 
-select 
-case
-    when (id = (select max(id) from Seat)) and (id%2=1) then id
-    when id % 2 = 1 then id+1
-    else id-1
-end as id, 
-student
-from Seat
-order by id;
+
+select t1.id, t2.student
+from Seat t1 
+join Seat t2
+on 
+    case
+        when t1.id % 2 = 0
+        then t1.id = t2.id+1
+        when t1.id = (select count(*) from Seat)
+        then t1.id = t2.id
+        else t1.id = t2.id-1
+    end
+order by t1.id
