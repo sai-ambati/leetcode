@@ -1,6 +1,11 @@
 # Write your MySQL query statement below
+select 
+customer_id 
+from Customer c
+left join Product p
+on c.product_key = p.product_key
 
-select customer_id
-from Customer
-group by customer_id
-having count(distinct product_key) = (select count(distinct product_key) from Product);
+group by customer_id 
+having count(distinct p.product_key) = (select count(*) from Product)
+
+order by c.customer_id, c.product_key, p.product_key
