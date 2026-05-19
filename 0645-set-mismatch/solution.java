@@ -1,25 +1,19 @@
-
-
 class Solution {
-    public int[] findErrorNums(int[] nums) {
-        int dup = -1, missing = -1;
-        
-        for (int i = 1; i <= nums.length; i++) {
-            int count = 0;
-            for (int j = 0; j < nums.length; j++) {
-                if (nums[j] == i) {
-                    count++;
-                }
-            }
-            if (count == 2) {
-                dup = i;
-            } else if (count == 0) {
-                missing = i;
+    public int[] findErrorNums(int[] arr) {
+        Arrays.sort(arr);
+        int[] ans = new int[2];
+        int n = arr.length;
+        for(int i = 1; i<n; i++){
+            if(arr[i]==arr[i-1]){
+                ans[0] = arr[i];
+                break;
             }
         }
-        
-        return new int[] {dup, missing};
+        int temp = 0;
+        for(int i =0;i<n; i++){
+            temp = temp + i+1 - arr[i];
+        }
+        ans[1] = temp + ans[0];
+        return ans;
     }
 }
-
-
