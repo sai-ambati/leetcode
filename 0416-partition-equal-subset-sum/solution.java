@@ -1,22 +1,29 @@
 class Solution {
     public boolean canPartition(int[] nums) {
-        int sum = 0, n = nums.length;
-        
-        for (int i = 0; i < n; i++)
-            sum += nums[i];
-        
-        if (sum % 2 != 0) 
-            return false;
+        int n = nums.length;
 
-        boolean[] dp = new boolean[10001];
-        dp[0] = true;
-        for (int num : nums) {
-            for (int j = 10000; j >= num; j--) {
-                dp[j] = dp[j] || dp[j - num];
-            }
-            if (dp[sum / 2]) 
-                return true;
+        long total_sum = 0;
+
+        for(int x:nums){
+            total_sum += x;
         }
-        return dp[sum / 2];
+
+        if(total_sum %2 != 0){
+            return false;
+        }
+
+        int target = (int)total_sum/2;
+
+        boolean[] dp = new boolean[target + 1];
+        dp[0] = true;
+        for(int x:nums){
+            for(int j = target; j>= x; j--){
+                if(dp[j-x]){
+                    dp[j] = true;
+                }
+            }
+        }
+
+        return dp[target];
     }
 }
