@@ -3,16 +3,25 @@ class Solution {
         Arrays.sort(g);
         Arrays.sort(s);
 
-        int contentChildren = 0;
-        int cookieIndex = 0;
+        int n = g.length;
+        int m = s.length;
 
-        while(cookieIndex < s.length && contentChildren < g.length){
-            if(s[cookieIndex]>=g[contentChildren]){
-                contentChildren++;
+        int left = 0;
+        int right = 0;
+
+        int count = 0;
+
+        while(left < n && right < m){
+            if(s[right] >= g[left]){
+                count++;
+                left++;
+                right++;
             }
-
-            cookieIndex++;
+            else{
+                right++;
+            }
         }
-        return contentChildren;
+
+        return count;
     }
 }
