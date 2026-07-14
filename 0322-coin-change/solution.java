@@ -1,33 +1,34 @@
 class Solution {
     public int coinChange(int[] coins, int amount) {
+        if (amount == 0) return 0;
         int[] dp = new int[amount+1];
-
         Arrays.fill(dp, -1);
 
-        int ans = solve(amount, coins, dp);
+        int res =  solve(coins, amount, dp);
 
-        return ans != Integer.MAX_VALUE ? ans : -1;
+        return res==Integer.MAX_VALUE ? -1 : res;
     }
 
-    public static int solve(int amount, int[] coins, int[] dp){
+    public static int solve(int[] coins, int amount, int[] dp){
         if(amount == 0){
             return 0;
         }
-
+        if(amount < 0){
+            return Integer.MAX_VALUE;
+        }
+        
         if(dp[amount] != -1){
             return dp[amount];
         }
-
-        int cur_min = Integer.MAX_VALUE;
-        for(int coin:coins){
-            if(amount - coin >= 0){
-                cur_min = Math.min(cur_min, solve(amount-coin, coins, dp));
+        int temp = Integer.MAX_VALUE;
+        for(int x:coins){
+            int res = solve(coins, amount-x, dp);
+            if(res != Integer.MAX_VALUE){
+                temp = Math.min(temp, res + 1);
             }
         }
-        
-        
-        dp[amount] = cur_min!=Integer.MAX_VALUE ? cur_min + 1 : cur_min;
 
+        dp[amount] = temp;
         return dp[amount];
     }
 }
