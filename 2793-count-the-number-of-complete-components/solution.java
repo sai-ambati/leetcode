@@ -1,72 +1,48 @@
-public class Solution {
-
+class Solution {
     public int countCompleteComponents(int n, int[][] edges) {
-        // Initialize Union Find and edge counter
-        UnionFind dsu = new UnionFind(n);
-        Map<Integer, Integer> edgeCount = new HashMap<>();
-
-        // Connect components using edges
-        for (int[] edge : edges) {
-            dsu.union(edge[0], edge[1]);
-        }
-
-        // Count edges in each component
-        for (int[] edge : edges) {
-            int root = dsu.find(edge[0]);
-            edgeCount.put(root, edgeCount.getOrDefault(root, 0) + 1);
-        }
-
-        // Check if each component is complete
-        int completeCount = 0;
-        for (int vertex = 0; vertex < n; vertex++) {
-            if (dsu.find(vertex) == vertex) { // If vertex is root
-                int nodeCount = dsu.size[vertex];
-                int expectedEdges = (nodeCount * (nodeCount - 1)) / 2;
-                if (edgeCount.getOrDefault(vertex, 0) == expectedEdges) {
-                    completeCount++;
+        ArrayList<ArrayList<Integer>> adj;
+        adj = createGraph(n, edges);
+        
+        boolean[] visited = new boolean[n];
+        int ans = 0;
+        for(int i = 0; i<n; i++){
+            if(!visited[i]){
+                int[] counts = new int[2];
+                dfsHelper(adj, i, visited, counts);
+                int v_count = counts[0];
+                int e_count = counts[1]/2;
+                if(e_count == (v_count*(v_count-1))/2){
+                    ans++;
                 }
             }
         }
-        return completeCount;
+
+        return ans;
     }
 
-    class UnionFind {
-
-        int[] parent;
-        int[] size; // Tracks size of each component
-
-        UnionFind(int n) {
-            parent = new int[n];
-            size = new int[n];
-            Arrays.fill(parent, -1);
-            Arrays.fill(size, 1);
-        }
-
-        // Find root of component with path compression
-        int find(int node) {
-            if (parent[node] == -1) {
-                return node;
-            }
-            return parent[node] = find(parent[node]);
-        }
-
-        // Union by size
-        void union(int node1, int node2) {
-            int root1 = find(node1);
-            int root2 = find(node2);
-
-            if (root1 == root2) {
-                return;
-            }
-
-            // Merge smaller component into larger one
-            if (size[root1] > size[root2]) {
-                parent[root2] = root1;
-                size[root1] += size[root2];
-            } else {
-                parent[root1] = root2;
-                size[root2] += size[root1];
+        // visited[node] = true;
+    public static void dfsHelper(ArrayList<ArrayList<Integer>> adj, int node, boolean[] visited, int[] counts){
+        visited[node] = true;
+        counts[0]++;
+        counts[1] += adj.get(node).size();
+        for(int nbr:adj.get(node)){
+            if(!visited[nbr]){
+                dfsHelper(adj, nbr, visited, counts);
             }
         }
+    }
+
+    public static ArrayList<ArrayList<Integer>> createGraph(int v, int[][] edges){
+        ArrayList<ArrayList<Integer>> adj = new ArrayList<>(v);
+        for(int i = 0; i<v; i++){
+            adj.add(new ArrayList<>());
+        }
+
+        int e = edges.length;
+        for(int i = 0; i<e; i++){
+            adj.get(edges[i][0]).add(edges[i][1]);
+            adj.get(edges[i][1]).add(edges[i][0]);
+        }
+        return adj;
     }
 }
