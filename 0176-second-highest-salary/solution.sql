@@ -1,12 +1,12 @@
 # Write your MySQL query statement below
 
-select
-ifnull(
-    (
-        select distinct salary
-        from Employee
-        order by salary desc
-        limit 1,1
-    ),
-    null
-) as SecondHighestSalary
+with cte as(
+    select *, dense_rank() over(order by salary desc) as sal_rank
+    from Employee
+)
+
+select (
+    select distinct salary
+    from cte
+    where sal_rank = 2
+)  as SecondHighestSalary
