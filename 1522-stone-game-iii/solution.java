@@ -1,24 +1,70 @@
 class Solution {
     public String stoneGameIII(int[] stoneValue) {
         int n = stoneValue.length;
-        int[] dp = new int [4];
-        for (int i = n - 1; i >= 0; i--) {
-            dp[i % 4] = stoneValue[i] - dp[(i + 1) % 4];
-            if (i + 2 <= n) {
-                dp[i % 4] = Math.max(dp[i % 4], stoneValue[i] + stoneValue[i + 1]
-                    - dp[(i + 2) % 4]);
-            }
-            if (i + 3 <= n) {
-                dp[i % 4] = Math.max(dp[i % 4], stoneValue[i] + stoneValue[i + 1]
-                    + stoneValue[i + 2] - dp[(i + 3) % 4]);
-            }
+        Integer[] dp = new Integer[n];
+        
+        int alice = helper(stoneValue, 0, n, dp);
+        int sum = 0;
+        for(int x:stoneValue){
+            sum += x;
         }
-        if (dp[0] > 0) {
+        int bob = sum-alice;
+        System.out.println(alice + " " + bob);
+        if(alice == bob){
+            return "Tie";
+        }
+        else if(alice > bob){
             return "Alice";
         }
-        if (dp[0] < 0) {
+        else{
             return "Bob";
         }
-        return "Tie";
+    }
+
+    public static int helper(int[] stoneValue, int i, int n, Integer[] dp){
+        if(i>=n){
+            return 0;
+        }
+        if(dp[i] != null) return dp[i];
+        int ans = Integer.MIN_VALUE;
+        if(i<n){
+            int temp = Integer.MAX_VALUE;
+            for(int j = 1; j<=3; j++){
+                
+                    temp = Math.min(temp, helper(stoneValue, i+j+1, n, dp));
+                
+            }
+            if(temp==Integer.MAX_VALUE){
+                temp = 0;
+            }
+            ans = Math.max(ans, temp+stoneValue[i]);
+        }
+        if(i+1<n){
+            int temp = Integer.MAX_VALUE;
+            for(int j = 1; j<=3; j++){
+                
+                    temp = Math.min(temp, helper(stoneValue, i+j+2, n, dp));
+                
+            }
+            if(temp==Integer.MAX_VALUE){
+                temp = 0;
+            }
+            ans = Math.max(ans, temp+stoneValue[i]+stoneValue[i+1]);
+        }
+        if(i+2<n){
+            int temp = Integer.MAX_VALUE;
+            for(int j = 1; j<=3; j++){
+                
+                    temp = Math.min(temp, helper(stoneValue, i+j+3, n, dp));
+                
+            }
+            if(temp==Integer.MAX_VALUE){
+                temp = 0;
+            }                
+            ans = Math.max(ans, temp+stoneValue[i]+stoneValue[i+1]+stoneValue[i+2]);
+        }
+
+        dp[i] = ans!=Integer.MIN_VALUE ? ans: 0;
+        return dp[i];
     }
 }
