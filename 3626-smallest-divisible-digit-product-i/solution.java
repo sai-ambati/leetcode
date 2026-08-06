@@ -1,19 +1,23 @@
 class Solution {
     public int smallestNumber(int n, int t) {
-        int temp = product(n);
-        while(temp%t != 0){
-            n+=1;
-            temp = product(n);
+        while (true) {
+            int digitProduct = 1;
+            int temp = n;
+            
+            // Extract digits and calculate their product
+            while (temp > 0) {
+                digitProduct *= (temp % 10);
+                temp /= 10;
+            }
+            
+            // Check if the product is divisible by t
+            if (digitProduct % t == 0) {
+                return n;
+            }
+            
+            // Move to the next number
+            n++;
         }
-        return n;
-    }
-    public static int product(int n){
-        int ans = 1;
-        while(n>0){
-            int ld = n%10;
-            ans *= ld;
-            n /= 10;
-        }
-        return ans;
     }
 }
+
